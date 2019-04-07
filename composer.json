@@ -1,0 +1,15 @@
+{
+    "name": "jpcaparas/trademe-php-api",
+    "description": "An PHP client for the Trade Me API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "JP Caparas",
+            "email": "jp@jpcaparas.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    }
+}
