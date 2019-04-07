@@ -3,13 +3,21 @@
     "description": "A PHP client for the Trade Me API",
     "type": "library",
     "license": "MIT",
+    "keywords": ["trademe", "trade-me"],
     "authors": [
         {
             "name": "JP Caparas",
             "email": "jp@jpcaparas.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "JPCaparas\\TradeMeAPI\\": "src/"
+        }
+    },
     "require": {
+        "php": "^7.0",
+        "ext-curl": "*",
         "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
