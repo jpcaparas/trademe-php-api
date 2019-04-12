@@ -80,7 +80,9 @@ class Client
     }
 
     /**
-     * Gets temporary access tokens
+     * Gets temporary access tokens.
+     *
+     * The access tokens will have to be stored somewhere for future use.
      *
      * @param null|array $scopes Scopes that the token has access to
      *
@@ -99,5 +101,33 @@ class Client
         parse_str($response, $parsed);
 
         return $parsed;
+    }
+
+    /**
+     * Generates a URL that will generate a verifier to get the final access tokens.
+     *
+     * User will have to must authenticate with said URL in order get the verifier code.
+     *
+     * The verifier code will have to be stored somewhere for future use.
+     *
+     * From the API docs:
+     *
+     * The user is asked to sign in (if they haven’t already) and then asked whether to allow or deny your application access.
+     * When the user clicks the Allow button, they will be redirected off to the callback address you provided in the first step,
+     * with the oauth_token and oauth_verifier as query string parameters.
+     *
+     * @param string The temporary OAuth access token
+     *
+     * @see Client::getTemporaryAccessTokens()
+     *
+     * @return string
+     */
+    public function getAccessTokenVerifierURL(string $tempAccessToken): string
+    {
+        return sprintf(
+            '%s/Oauth/Authorize?oauth_token=%s',
+            'https://secure.' . $this->request->getBaseDomain(),
+            urlencode($tempAccessToken)
+        );
     }
 }

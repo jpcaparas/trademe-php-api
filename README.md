@@ -16,12 +16,12 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
         
     $client = new \JPCaparas\TradeMeAPI\Client($config);
     
-    ['oauth_token' => $oauthToken, 'oauth_secret' => $oauthSecret] = $client->getTemporaryAccessTokens();
+    ['oauth_token' => $tempOauthToken, 'oauth_secret' => $tempOauthSecret] = $client->getTemporaryAccessTokens();
     
 #### Getting the OAuth token verifier to validate temporary access tokens (Step 2)
 
-_Adding..._
-    
+    $client->getAccessTokenVerifierURL($tempOAuthToken); // Visit this URL and store the verifier code
+
 ## Making API calls
 
 You can make API calls once you've gotten your final access tokens:

@@ -96,7 +96,7 @@ class Request
     {
         $apiUrl = sprintf(
             'https://api.%s/%s/%s',
-            $this->getBaseUrl(),
+            $this->getBaseDomain(),
             self::API_VERSION,
             ltrim($uri, '/')
         );
@@ -126,13 +126,13 @@ class Request
     {
         $OAuthUrl = sprintf(
             'https://secure.%s/%s',
-            $this->getBaseUrl() . '/Oauth/',
+            $this->getBaseDomain() . '/Oauth/',
             ltrim($uri, '/'));
 
         return $this->send($method, $OAuthUrl, $parameters, $headers);
     }
 
-    private function getBaseUrl(): string
+    public function getBaseDomain(): string
     {
         return $this->sandbox ? self::BASE_DOMAIN_SANDBOX : self::BASE_DOMAIN_PRODUCTION;
     }

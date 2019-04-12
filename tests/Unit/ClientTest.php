@@ -138,7 +138,26 @@ class ClientTest extends TestCase
         $this->assertEquals(
             ['oauth_token' => 'foo', 'oauth_token_secret' => 'bar'],
             $tokens,
-            'The OAuth tokens do not match expectations.'
+            'The access tokens do not match expectations.'
+        );
+    }
+
+    /**
+     * @covers ::getAccessTokenVerifierURL
+     */
+    public function testGetAccessTokenVerifierURL(): void
+    {
+        $request = $this->prophesize(Request::class);
+        $request->getBaseDomain()->willReturn('trademe.co.nz');
+
+        $client = new Client([], $request->reveal());
+
+        $url = $client->getAccessTokenVerifierURL('foo');
+
+        $this->assertEquals(
+            'https://secure.trademe.co.nz/Oauth/Authorize?oauth_token=foo',
+            $url,
+            'The URL generated is not valid.'
         );
     }
 }
