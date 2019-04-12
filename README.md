@@ -16,7 +16,7 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
         
     $client = new \JPCaparas\TradeMeAPI\Client($config);
     
-    ['oauth_token' => $tempOauthToken, 'oauth_secret' => $tempOauthSecret] = $client->getTemporaryAccessTokens();
+    ['oauth_token' => $tempAccessToken, 'oauth_token_secret' => $tempAccessTokenSecret] = $client->getTemporaryAccessTokens();
     
 #### Getting the OAuth token verifier to validate temporary access tokens (Step 2)
 
@@ -24,7 +24,7 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
     
 #### Getting the final access tokens (Step 2)
 
-    // The config values are a culmination of Steps 1 and 2
+    // The config values are a culmination of steps 1 and 2
     $config = [
         'consumer_key' => 'foo',
         'consumer_secret' => 'bar',
@@ -33,8 +33,8 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
         'token_verifier' => 'quux'
     ];
 
-    $client->getFinalAccessTokens($config);
-
+    ['oauth_token' => $accessToken, 'oauth_token_secret' => $accessTokenSecret] = $client->getFinalAccessTokens($config);
+    
 ## Making API calls
 
 You can make API calls once you've gotten your final access tokens:
