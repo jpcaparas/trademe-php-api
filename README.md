@@ -20,9 +20,9 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
     
 #### Getting the OAuth token verifier to validate temporary access tokens (Step 2)
 
-    $client->getAccessTokenVerifierURL($tempOAuthToken); // Visit this URL and store the verifier code
+    $tokenVerifierUrl = $client->getAccessTokenVerifierURL($tempOAuthToken); // Visit this URL and store the verifier code
     
-#### Getting the final access tokens (Step 2)
+#### Getting the final access tokens (Step 3)
 
     // The config values are a culmination of steps 1 and 2
     $config = [
