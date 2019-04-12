@@ -80,7 +80,7 @@ class Client
     }
 
     /**
-     * Gets the OAuth token and its accompanying secret
+     * Gets temporary access tokens
      *
      * @param null|array $scopes Scopes that the token has access to
      *
@@ -88,7 +88,7 @@ class Client
      *
      * @return array An array containing both the OAuth token and key
      */
-    public function getOAuthTokens(?array $scopes = null): array
+    public function getTemporaryAccessTokens(?array $scopes = null): array
     {
         $scopes = $scopes ?? [self::SCOPE_READ, self::SCOPE_WRITE];
 

@@ -119,7 +119,10 @@ class ClientTest extends TestCase
         $client->api('GET', 'SomeURI.json', $params);
     }
 
-    public function testGetOAuthTokens(): void
+    /**
+     * @covers ::getTemporaryAccessTokens
+     */
+    public function testGetTemporaryAccessTokens(): void
     {
         $request = $this->prophesize(Request::class);
         $request
@@ -130,7 +133,7 @@ class ClientTest extends TestCase
 
         $client = new Client([], $request->reveal());
 
-        $tokens = $client->getOAuthTokens();
+        $tokens = $client->getTemporaryAccessTokens();
 
         $this->assertEquals(
             ['oauth_token' => 'foo', 'oauth_token_secret' => 'bar'],

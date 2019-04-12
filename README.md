@@ -2,12 +2,9 @@
 
 An unofficial PHP client to make it easy to interface with Trade Me's [API platform](https://developer.trademe.co.nz/).
 
+## Authorizing
 
-## Usage
-
-Usage is fairly straightforward. Assuming you've gotten your consumer keys for [the sandbox](https://tmsandbox.co.nz), you can use this API to:
-
-#### Getting OAuth tokens
+#### Getting temporary access tokens (Step 1)
 
     $config = [
         'sandbox' => true,
@@ -19,8 +16,16 @@ Usage is fairly straightforward. Assuming you've gotten your consumer keys for [
         
     $client = new \JPCaparas\TradeMeAPI\Client($config);
     
-    ['oauth_token' => $oauthToken, 'oauth_secret' => $oauthSecret] = $client->getOAuthTokens();
+    ['oauth_token' => $oauthToken, 'oauth_secret' => $oauthSecret] = $client->getTemporaryAccessTokens();
     
+#### Getting the OAuth token verifier to validate temporary access tokens (Step 2)
+
+_Adding..._
+    
+## Making API calls
+
+You can make API calls once you've gotten your final access tokens:
+
 #### Selling an item
 
     $config = [
@@ -30,6 +35,7 @@ Usage is fairly straightforward. Assuming you've gotten your consumer keys for [
             'consumer_secret' => 'bar',
             'token' => 'baz',
             'token_secret' => 'qux',
+            'token_verifier' => 'quu',
         ],
     ];
     
