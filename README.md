@@ -2,6 +2,10 @@
 
 An unofficial PHP client to make it easy to interface with Trade Me's [API platform](https://developer.trademe.co.nz/).
 
+## Installation
+
+    composer require jpcaparas/trademe-php-api
+
 ## Authorizing
 
 #### Getting temporary access tokens (Step 1)
