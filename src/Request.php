@@ -110,6 +110,28 @@ class Request
         return $this->send($method, $apiUrl, $parameters, $headers, $options);
     }
 
+    /**
+     * Send a request to the OAuth endpoint
+     *
+     * @param string $method
+     * @param string $uri
+     * @param array $parameters
+     * @param array $headers
+     *
+     * @return string
+     *
+     * @throws RequestException
+     */
+    public function oauth(string $method, string $uri, array $parameters = [], array $headers = []): string
+    {
+        $OAuthUrl = sprintf(
+            'https://secure.%s/%s',
+            $this->getBaseUrl() . '/Oauth/',
+            ltrim($uri, '/'));
+
+        return $this->send($method, $OAuthUrl, $parameters, $headers);
+    }
+
     private function getBaseUrl(): string
     {
         return $this->sandbox ? self::BASE_DOMAIN_SANDBOX : self::BASE_DOMAIN_PRODUCTION;

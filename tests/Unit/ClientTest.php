@@ -118,4 +118,24 @@ class ClientTest extends TestCase
 
         $client->api('GET', 'SomeURI.json', $params);
     }
+
+    public function testGetOAuthTokens(): void
+    {
+        $request = $this->prophesize(Request::class);
+        $request
+            ->oauth('POST', '/RequestToken?scope=MyTradeMeRead,MyTradeMeWrite')
+            ->willReturn(
+                'oauth_token=foo&oauth_token_secret=bar'
+            );
+
+        $client = new Client([], $request->reveal());
+
+        $tokens = $client->getOAuthTokens();
+
+        $this->assertEquals(
+            ['oauth_token' => 'foo', 'oauth_token_secret' => 'bar'],
+            $tokens,
+            'The OAuth tokens do not match expectations.'
+        );
+    }
 }

@@ -78,4 +78,26 @@ class Client
     {
         return $this->request->api($method, $uri, $params);
     }
+
+    /**
+     * Gets the OAuth token and its accompanying secret
+     *
+     * @param null|array $scopes Scopes that the token has access to
+     *
+     * @throws RequestException
+     *
+     * @return array An array containing both the OAuth token and key
+     */
+    public function getOAuthTokens(?array $scopes = null): array
+    {
+        $scopes = $scopes ?? [self::SCOPE_READ, self::SCOPE_WRITE];
+
+        $uri = sprintf('/RequestToken?scope=%s', join(',', $scopes));
+
+        $response = $this->request->oauth('POST', $uri);
+
+        parse_str($response, $parsed);
+
+        return $parsed;
+    }
 }
