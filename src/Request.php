@@ -110,28 +110,6 @@ class Request
         return $this->send($method, $apiUrl, $parameters, $headers, $options);
     }
 
-    /**
-     * Send a request to the OAuth endpoint
-     *
-     * @param string $method
-     * @param string $uri
-     * @param array $parameters
-     * @param array $headers
-     *
-     * @return string
-     *
-     * @throws RequestException
-     */
-    public function oauth(string $method, string $uri, array $parameters = [], array $headers = []): string
-    {
-        $OAuthUrl = sprintf(
-            'https://secure.%s/%s',
-            $this->getBaseDomain() . '/Oauth/',
-            ltrim($uri, '/'));
-
-        return $this->send($method, $OAuthUrl, $parameters, $headers);
-    }
-
     public function getBaseDomain(): string
     {
         return $this->sandbox ? self::BASE_DOMAIN_SANDBOX : self::BASE_DOMAIN_PRODUCTION;
@@ -174,6 +152,28 @@ class Request
         $this->lastResponse = (string)$response->getBody();
 
         return $this->lastResponse;
+    }
+
+    /**
+     * Send a request to the OAuth endpoint
+     *
+     * @param string $method
+     * @param string $uri
+     * @param array $parameters
+     * @param array $headers
+     *
+     * @return string
+     *
+     * @throws RequestException
+     */
+    public function oauth(string $method, string $uri, array $parameters = [], array $headers = []): string
+    {
+        $OAuthUrl = sprintf(
+            'https://secure.%s/%s',
+            $this->getBaseDomain() . '/Oauth/',
+            ltrim($uri, '/'));
+
+        return $this->send($method, $OAuthUrl, $parameters, $headers);
     }
 
     public function getLastResponse()

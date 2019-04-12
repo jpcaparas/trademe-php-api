@@ -86,9 +86,9 @@ class Client
      *
      * @param null|array $scopes Scopes that the token has access to
      *
+     * @return array An array containing both the OAuth token and key
      * @throws RequestException
      *
-     * @return array An array containing both the OAuth token and key
      */
     public function getTemporaryAccessTokens(?array $scopes = null): array
     {
@@ -118,9 +118,9 @@ class Client
      *
      * @param string The temporary OAuth access token
      *
+     * @return string
      * @see Client::getTemporaryAccessTokens()
      *
-     * @return string
      */
     public function getAccessTokenVerifierURL(string $tempAccessToken): string
     {
@@ -129,5 +129,68 @@ class Client
             'https://secure.' . $this->request->getBaseDomain(),
             urlencode($tempAccessToken)
         );
+    }
+
+
+    /**
+     *  Gets final access tokens.
+     *
+     * Use the temporary access tokens and token verifier
+     *
+     * @param array $config
+     * @return array
+     *
+     * @throws RequestException
+     */
+    public function getFinalAccessTokens(array $config): array
+    {
+        $requiredKeys = ['consumer_key', 'consumer_secret', 'temp_token', 'temp_token_secret', 'token_verifier'];
+
+        self::validateRequired($requiredKeys, $config, function (array $requiredKeys) {
+            $errorMsg = sprintf(
+                'To get the final access tokens, specify the following: %s.',
+                join(', ', $requiredKeys)
+            );
+
+            throw new ClientException($errorMsg);
+        });
+
+
+        $uri = sprintf('/AccessToken?oauth_verifier=%s', urlencode($config['token_verifier']));
+
+        // For this particular call, we will be using custom headers
+        $buildAuthorizationHeader = function () use ($config) {
+            // Create a nonce based on the config values
+            $nonce = substr(sha1(join('||', $config)), 0, 10);
+
+            $params = [
+                'consumer_key' => $config['consumer_key'],
+                'consumer_secret' => $config['consumer_secret'],
+                'token' => $config['temp_token'],
+                'token_secret' => $config['temp_token_secret'],
+                'oauth_version' => '1.0',
+                'oauth_signature_method' => 'PLAINTEXT',
+                'oauth_timestamp' => time(),
+                'oauth_nonce' => $nonce,
+                'oauth_signature' => rawurlencode(sprintf('%s&%s', $config['consumer_secret'], $config['temp_token_secret']))
+            ];
+
+            foreach ($params as $key => $value) {
+                $params[$key] = $key . '="' . rawurlencode($value) . '"';
+            }
+
+            return ['Authorization', 'OAuth ' . implode(', ', $params)];
+        };
+
+        [$authorization, $oauth] = $buildAuthorizationHeader();
+
+        $headers = [];
+        $headers[$authorization] = $oauth;
+
+        $response = $this->request->oauth('POST', $uri, [], $headers);
+
+        parse_str($response, $accessTokens);
+
+        return $accessTokens;
     }
 }

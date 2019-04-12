@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use JPCaparas\TradeMeAPI\Client;
 use JPCaparas\TradeMeAPI\Exceptions\ClientException;
 use JPCaparas\TradeMeAPI\Request;
+use Prophecy\Argument;
 use Tests\TestCase;
 
 /**
@@ -159,5 +160,53 @@ class ClientTest extends TestCase
             $url,
             'The URL generated is not valid.'
         );
+    }
+
+    /**
+     * @covers ::getFinalAccessTokens
+     */
+    public function testGetFinalAccessTokensWillThrowExceptionOnMissingConfig(): void
+    {
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage(
+            'To get the final access tokens, specify the following: consumer_key, consumer_secret, temp_token, temp_token_secret, token_verifier'
+        );
+
+        $request = $this->prophesize(Request::class);
+
+        $client = new Client([], $request->reveal());
+
+        $client->getFinalAccessTokens([]);
+    }
+
+    /**
+     * @covers ::getFinalAccessTokens
+     */
+    public function testGetFinalAccessTokens(): void
+    {
+        $request = $this->prophesize(Request::class);
+        $request->oauth(
+            'POST',
+            "/AccessToken?oauth_verifier=quux",
+            [],
+            new Argument\Token\ArrayEntryToken(
+                'Authorization',
+                new Argument\Token\StringContainsToken(
+                    'OAuth consumer_key="foo", consumer_secret="bar", token="baz", token_secret="qux", oauth_version="1.0", oauth_signature_method="PLAINTEXT"'
+                )
+            )
+        )->willReturn('oauth_token=foo&oauth_token_secret=bar');
+
+        $client = new Client([], $request->reveal());
+
+        $config = [
+            'consumer_key' => 'foo',
+            'consumer_secret' => 'bar',
+            'temp_token' => 'baz',
+            'temp_token_secret' => 'qux',
+            'token_verifier' => 'quux'
+        ];
+
+        $client->getFinalAccessTokens($config);
     }
 }
