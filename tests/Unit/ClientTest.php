@@ -79,9 +79,9 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @covers ::send
+     * @covers ::api
      */
-    public function testSend(): void
+    public function testApi(): void
     {
         $request = $this->prophesize(Request::class);
         $request->api(
@@ -116,6 +116,6 @@ class ClientTest extends TestCase
             ],
         ];
 
-        $client->send('GET', 'SomeURI.json', $params);
+        $client->api('GET', 'SomeURI.json', $params);
     }
 }

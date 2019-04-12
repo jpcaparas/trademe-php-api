@@ -51,7 +51,7 @@ class Client
 
         self::validateParams($requiredKeys, $params);
 
-        return $this->send('POST', $uri, $params);
+        return $this->api('POST', $uri, $params);
     }
 
     /**
@@ -79,7 +79,7 @@ class Client
     }
 
     /**
-     * General purpose method for sending requests
+     * General purpose method for sending API requests.
      *
      * @param $method
      * @param $uri
@@ -89,7 +89,7 @@ class Client
      *
      * @throws RequestException
      */
-    public function send($method, $uri, $params): string
+    public function api($method, $uri, $params): string
     {
         return $this->request->api($method, $uri, $params);
     }
