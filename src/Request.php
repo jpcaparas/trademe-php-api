@@ -40,8 +40,14 @@ class Request
      */
     private $httpClient;
 
+    /**
+     * @var array
+     */
+    private $options;
+
     public function __construct($options = [], ?HttpClient $httpClient = null)
     {
+        // Set options (and throw an error if required ones are missing
         $requiredOptions = ['consumer_key', 'consumer_secret'];
 
         self::validateRequired($requiredOptions, $options['oauth'] ?? [], function (array $requiredOptions) {
@@ -53,8 +59,10 @@ class Request
             throw new RequestException($errorMsg);
         });
 
-        $this->debug = $options['debug'] ?? false;
-        $this->sandbox = $options['sandbox'] ?? false;
+        $this->options = $options;
+
+        $this->debug = $this->getOption('debug', false);
+        $this->sandbox = $this->getOption('sandbox', false);
 
         $stack = HandlerStack::create();
 
@@ -78,6 +86,29 @@ class Request
                 'handler' => $stack,
                 'debug' => $this->debug
             ]);
+    }
+
+    /**
+     * Gets an option value by its key
+     *
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getOption(string $key, $default = null)
+    {
+        return $this->options[$key] ?? $default;
+    }
+
+    /**
+     * Gets all options
+     *
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 
     /**

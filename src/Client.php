@@ -144,7 +144,7 @@ class Client
      */
     public function getFinalAccessTokens(array $config): array
     {
-        $requiredKeys = ['consumer_key', 'consumer_secret', 'temp_token', 'temp_token_secret', 'token_verifier'];
+        $requiredKeys = ['temp_token', 'temp_token_secret', 'token_verifier'];
 
         self::validateRequired($requiredKeys, $config, function (array $requiredKeys) {
             $errorMsg = sprintf(
@@ -164,8 +164,8 @@ class Client
             $nonce = substr(sha1(join('||', $config)), 0, 10);
 
             $params = [
-                'consumer_key' => $config['consumer_key'],
-                'consumer_secret' => $config['consumer_secret'],
+                'consumer_key' => $this->request->getOption('consumer_key'),
+                'consumer_secret' => $this->request->getOption('consumer_secret'),
                 'token' => $config['temp_token'],
                 'token_secret' => $config['temp_token_secret'],
                 'oauth_version' => '1.0',

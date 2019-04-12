@@ -169,7 +169,7 @@ class ClientTest extends TestCase
     {
         $this->expectException(ClientException::class);
         $this->expectExceptionMessage(
-            'To get the final access tokens, specify the following: consumer_key, consumer_secret, temp_token, temp_token_secret, token_verifier'
+            'To get the final access tokens, specify the following: temp_token, temp_token_secret, token_verifier'
         );
 
         $request = $this->prophesize(Request::class);
@@ -185,6 +185,10 @@ class ClientTest extends TestCase
     public function testGetFinalAccessTokens(): void
     {
         $request = $this->prophesize(Request::class);
+
+        $request->getOption('consumer_key')->willReturn('foo');
+        $request->getOption('consumer_secret')->willReturn('bar');
+
         $request->oauth(
             'POST',
             "/AccessToken?oauth_verifier=quux",
