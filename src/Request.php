@@ -7,11 +7,14 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
+use JPCaparas\TradeMeAPI\Concerns\ValidatesRequired;
 use JPCaparas\TradeMeAPI\Exceptions\OAuthException;
 use JPCaparas\TradeMeAPI\Exceptions\RequestException;
 
 class Request
 {
+    use ValidatesRequired;
+
     private const BASE_DOMAIN_PRODUCTION = 'trademe.co.nz';
     private const BASE_DOMAIN_SANDBOX = 'tmsandbox.co.nz';
 
@@ -39,6 +42,17 @@ class Request
 
     public function __construct($options = [], ?HttpClient $httpClient = null)
     {
+        $requiredOptions = ['consumer_key', 'consumer_secret'];
+
+        self::validateRequired($requiredOptions, $options['oauth'] ?? [], function (array $requiredOptions) {
+            $errorMsg = sprintf(
+                'All requests must include the following OAuth directives: %s.',
+                join(', ', $requiredOptions)
+            );
+
+            throw new RequestException($errorMsg);
+        });
+
         $this->debug = $options['debug'] ?? false;
         $this->sandbox = $options['sandbox'] ?? false;
 

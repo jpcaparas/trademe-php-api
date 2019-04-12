@@ -15,13 +15,13 @@ class ClientTest extends TestCase
     /**
      * @covers ::sellItem
      */
-    public function testSellItemThrowsExceptionWhenIncompleteParamsGiven(): void
+    public function testSellItemThrowsExceptionWhenIncompleteRequestParamsGiven(): void
     {
         $this->expectException(ClientException::class);
 
         $request = $this->prophesize(Request::class);
 
-        $client = new Client($request->reveal());
+        $client = new Client([], $request->reveal());
 
         $params = [
             'Category' => 'TestCategory',
@@ -59,7 +59,7 @@ class ClientTest extends TestCase
             ]
         )->willReturn('banana');
 
-        $client = new Client($request->reveal());
+        $client = new Client([], $request->reveal());
 
         $params = [
             'Category' => 'TestCategory',
@@ -100,7 +100,7 @@ class ClientTest extends TestCase
             ]
         )->willReturn('banana');
 
-        $client = new Client($request->reveal());
+        $client = new Client([], $request->reveal());
 
         $params = [
             'Category' => 'TestCategory',

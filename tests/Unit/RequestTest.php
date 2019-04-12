@@ -16,6 +16,9 @@ class RequestTest extends TestCase
     public function testWillThrowExceptionOnMissingConfig(): void
     {
         $this->expectException(RequestException::class);
+        $this->expectExceptionMessage(
+            'All requests must include the following OAuth directives: consumer_key, consumer_secret.'
+        );
 
         new Request([]);
     }

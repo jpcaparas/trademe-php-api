@@ -2,6 +2,7 @@
 
 namespace JPCaparas\TradeMeAPI;
 
+use JPCaparas\TradeMeAPI\Concerns\ValidatesRequired;
 use JPCaparas\TradeMeAPI\Exceptions\ClientException;
 use JPCaparas\TradeMeAPI\Exceptions\RequestException;
 
@@ -10,17 +11,19 @@ use JPCaparas\TradeMeAPI\Exceptions\RequestException;
  */
 class Client
 {
+    use ValidatesRequired;
+
     const SCOPE_READ = 'MyTradeMeRead';
     const SCOPE_WRITE = 'MyTradeMeWrite';
 
     /**
-     * @var Request
+     * @var Request $request An (optional) pre-configured request object
      */
     private $request;
 
-    public function __construct(?Request $request = null)
+    public function __construct(array $requestOptions = [], ?Request $request = null)
     {
-        $this->request = $request ?? new Request();
+        $this->request = $request ?? new Request($requestOptions);
     }
 
     /**
@@ -30,7 +33,6 @@ class Client
      *
      * @return string
      *
-     * @throws ClientException
      * @throws RequestException
      */
     public function sellItem(array $params): string
@@ -49,33 +51,16 @@ class Client
             'ShippingOptions'
         ];
 
-        self::validateParams($requiredKeys, $params);
+        self::validateRequired($requiredKeys, $params, function (array $requiredKeys) {
+            $errorMsg = sprintf(
+                'In order to sell an item, you must include specify the following: %s.',
+                join(', ', $requiredKeys)
+            );
+
+            throw new ClientException($errorMsg);
+        });
 
         return $this->api('POST', $uri, $params);
-    }
-
-    /**
-     * Validates params against required keys for a request.
-     *
-     * @param array $requiredKeys
-     * @param array $params
-     *
-     * @throws ClientException
-     */
-    private static function validateParams(array $requiredKeys, array $params): void
-    {
-        $paramKeys = array_keys($params);
-
-        $matchCount = count(array_intersect($requiredKeys, $paramKeys));
-
-        if ($matchCount < count($requiredKeys)) {
-            throw new ClientException(
-                sprintf(
-                    'Params required from this request include: %s.',
-                    join(', ', $requiredKeys)
-                )
-            );
-        }
     }
 
     /**
