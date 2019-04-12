@@ -15,13 +15,21 @@
             "JPCaparas\\TradeMeAPI\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": "^7.1",
         "ext-curl": "*",
-        "guzzlehttp/guzzle": "^6.3"
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/oauth-subscriber": "^0.3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.1",
-        "phpspec/prophecy": "^1.8"
+        "phpspec/prophecy": "^1.8",
+        "symfony/var-dumper": "^4.2"
     }
 }
