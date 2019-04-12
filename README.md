@@ -5,11 +5,12 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
 
 ## Usage
 
-Usage is fairly straightforward. Assuming you've gotten your API keys for [the sandbox](https://tmsandbox.co.nz), you can use this API to:
+Usage is fairly straightforward. Assuming you've gotten your consumer keys for [the sandbox](https://tmsandbox.co.nz), you can use this API to:
 
-#### Getting an OAuth URL
+#### Getting OAuth tokens
 
     $config = [
+        'sandbox' => true,
         'oauth' => [
             'consumer_key' => 'foo',
             'consumer_secret' => 'bar',
@@ -23,6 +24,7 @@ Usage is fairly straightforward. Assuming you've gotten your API keys for [the s
 #### Selling an item
 
     $config = [
+        'sandbox' => true,
         'oauth' => [
             'consumer_key' => 'foo',
             'consumer_secret' => 'bar',
