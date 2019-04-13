@@ -164,8 +164,8 @@ class Client
             $nonce = substr(sha1(join('||', $config)), 0, 10);
 
             $params = [
-                'consumer_key' => $this->request->getOption('consumer_key'),
-                'consumer_secret' => $this->request->getOption('consumer_secret'),
+                'consumer_key' => $this->request->getOption('oauth.consumer_key'),
+                'consumer_secret' => $this->request->getOption('oauth.consumer_secret'),
                 'token' => $config['temp_token'],
                 'token_secret' => $config['temp_token_secret'],
                 'oauth_version' => '1.0',

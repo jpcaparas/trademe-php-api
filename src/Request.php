@@ -8,7 +8,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use JPCaparas\TradeMeAPI\Concerns\ValidatesRequired;
-use JPCaparas\TradeMeAPI\Exceptions\OAuthException;
 use JPCaparas\TradeMeAPI\Exceptions\RequestException;
 
 class Request
@@ -67,17 +66,13 @@ class Request
         $stack = HandlerStack::create();
 
         // Handle OAuth requests seamlessly
-        try {
-            $oauthMiddleware = new OAuth1([
-                'signature_method' => OAuth1::SIGNATURE_METHOD_PLAINTEXT,
-                'consumer_key' => $options['oauth']['consumer_key'] ?? '',
-                'consumer_secret' => $options['oauth']['consumer_secret'] ?? '',
-                'token' => $options['oauth']['token'] ?? '',
-                'token_secret' => $options['oauth']['token_secret'] ?? '',
-            ]);
-        } catch (OAuthException $e) {
-            throw new RequestException($e->getMessage());
-        }
+        $oauthMiddleware = new OAuth1([
+            'signature_method' => OAuth1::SIGNATURE_METHOD_PLAINTEXT,
+            'consumer_key' => $this->getOption('oauth.consumer_key'),
+            'consumer_secret' => $this->getOption('oauth.consumer_secret'),
+            'token' => $this->getOption('oauth.token'),
+            'token_secret' => $this->getOption('token_secret'),
+        ]);
 
         $stack->push($oauthMiddleware);
 
@@ -89,7 +84,7 @@ class Request
     }
 
     /**
-     * Gets an option value by its key
+     * Gets an option value by its key. Supports dot notation (e.g. oauth.consumer_key)
      *
      * @param string $key
      * @param mixed $default
@@ -98,7 +93,32 @@ class Request
      */
     public function getOption(string $key, $default = null)
     {
-        return $this->options[$key] ?? $default;
+        return $this->getByDotNotation($key, $default, $this->options);
+    }
+
+    /**
+     * Gets an array value by its key. Supports dot notation (e.g. oauth.consumer_key)
+     *
+     * @param string $key
+     * @param mixed $default
+     * @param array $data
+     *
+     * @return mixed
+     */
+    private function getByDotNotation(string $key, $default = null, array $data = [])
+    {
+        $keys = explode('.', $key);
+
+        $firstKey = array_shift($keys);
+
+        // All keys exhausted
+        if (empty($keys)) {
+            return $data[$firstKey] ?? $default;
+        }
+
+        $remainingKeys = join('.', $keys);
+
+        return $this->getByDotNotation($remainingKeys, $default, $data[$firstKey]);
     }
 
     /**

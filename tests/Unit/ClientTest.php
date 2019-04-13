@@ -186,8 +186,8 @@ class ClientTest extends TestCase
     {
         $request = $this->prophesize(Request::class);
 
-        $request->getOption('consumer_key')->willReturn('foo');
-        $request->getOption('consumer_secret')->willReturn('bar');
+        $request->getOption('oauth.consumer_key')->willReturn('foo');
+        $request->getOption('oauth.consumer_secret')->willReturn('bar');
 
         $request->oauth(
             'POST',

@@ -26,8 +26,6 @@ class OAuth1 extends Oauth1Base
     /**
      * Oauth1 constructor.
      * @param $config
-     *
-     * @throws OAuthException
      */
     public function __construct($config)
     {
@@ -36,10 +34,6 @@ class OAuth1 extends Oauth1Base
         $this->consumerSecret = $config['consumer_secret'] ?? '';
 
         $this->tokenSecret = $config['token_secret'] ?? '';
-
-        if (empty($this->consumerSecret) || empty($this->tokenSecret)) {
-            throw new OAuthException('Both the consumer secret and token secret are required to send an API request.');
-        }
     }
 
     /**
