@@ -3,7 +3,6 @@
 namespace JPCaparas\TradeMeAPI;
 
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
@@ -71,7 +70,7 @@ class Request
             'consumer_key' => $this->getOption('oauth.consumer_key'),
             'consumer_secret' => $this->getOption('oauth.consumer_secret'),
             'token' => $this->getOption('oauth.token'),
-            'token_secret' => $this->getOption('token_secret'),
+            'token_secret' => $this->getOption('oauth.token_secret'),
         ]);
 
         $stack->push($oauthMiddleware);
@@ -196,11 +195,17 @@ class Request
 
         try {
             $response = $this->httpClient->request($method, $url, $options);
-        } catch (GuzzleException $e) {
-            throw new RequestException($e->getMessage());
+        } catch (\Exception $e) {
+            if ($e instanceof \GuzzleHttp\Exception\RequestException) {
+                throw new RequestException($e->getResponse()->getBody(true));
+            } else {
+                throw new RequestException($e->getMessage());
+            }
         }
 
-        $this->lastResponse = (string)$response->getBody();
+        $body = $response->getBody();
+
+        $this->lastResponse = $body->getContents();
 
         return $this->lastResponse;
     }
@@ -221,7 +226,7 @@ class Request
     {
         $OAuthUrl = sprintf(
             'https://secure.%s/%s',
-            $this->getBaseDomain() . '/Oauth/',
+            $this->getBaseDomain() . '/Oauth',
             ltrim($uri, '/'));
 
         return $this->send($method, $OAuthUrl, $parameters, $headers);

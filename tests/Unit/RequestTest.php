@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use JPCaparas\TradeMeAPI\Exceptions\RequestException;
 use JPCaparas\TradeMeAPI\Request;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
 /**
@@ -29,7 +30,10 @@ class RequestTest extends TestCase
     public function testSend(): void
     {
         $response = $this->prophesize(ResponseInterface::class);
-        $response->getBody()->willReturn('banana');
+        $stream = $this->prophesize(StreamInterface::class);
+
+        $stream->getContents()->willReturn('banana');
+        $response->getBody()->willReturn($stream->reveal());
 
         $httpClient = $this->prophesize(Client::class);
         $httpClient->request(
@@ -65,7 +69,10 @@ class RequestTest extends TestCase
     public function testApi(): void
     {
         $response = $this->prophesize(ResponseInterface::class);
-        $response->getBody()->willReturn('banana');
+        $stream = $this->prophesize(StreamInterface::class);
+
+        $stream->getContents()->willReturn('banana');
+        $response->getBody()->willReturn($stream->reveal());
 
         $httpClient = $this->prophesize(Client::class);
         $httpClient->request(
