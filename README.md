@@ -1,5 +1,7 @@
 # Trade Me PHP API
 
+[![Build Status](https://travis-ci.org/jpcaparas/trademe-php-api.svg?branch=master)](https://travis-ci.org/jpcaparas/trademe-php-api)
+
 An unofficial PHP client to make it easy to interface with Trade Me's [API platform](https://developer.trademe.co.nz/).
 
 ## Installation
