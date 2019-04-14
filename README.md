@@ -30,8 +30,6 @@ An unofficial PHP client to make it easy to interface with Trade Me's [API platf
 
     // The config values are a culmination of steps 1 and 2
     $config = [
-        'consumer_key' => 'foo',
-        'consumer_secret' => 'bar',
         'temp_token' => 'baz',
         'temp_token_secret' => 'qux',
         'token_verifier' => 'quux'
@@ -86,3 +84,4 @@ You can make API calls once you've gotten your final access tokens:
 ## Badges
 
 _Coming soon..._
+
