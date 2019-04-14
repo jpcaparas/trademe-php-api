@@ -83,7 +83,3 @@ You can make API calls once you've gotten your final access tokens:
 - OAuth 1.0 PLAINTEXT workflow [(link)](https://developer.trademe.co.nz/api-overview/example-plaintext-workflow/)
 - API reference [(link)](https://developer.trademe.co.nz/api-reference/)
 
-## Badges
-
-_Coming soon..._
-
