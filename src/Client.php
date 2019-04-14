@@ -90,17 +90,48 @@ class Client
      * @throws RequestException
      *
      */
-    public function getTemporaryAccessTokens(?array $scopes = null): array
+    public function getTemporaryAccessTokens(array $scopes = [self::SCOPE_READ, self::SCOPE_WRITE]): array
     {
-        $scopes = $scopes ?? [self::SCOPE_READ, self::SCOPE_WRITE];
-
         $uri = sprintf('/RequestToken?scope=%s', join(',', $scopes));
 
-        $response = $this->request->oauth('POST', $uri);
+        $buildAuthorizationHeader = function () {
+            $params = [
+                'oauth_consumer_key' => $this->request->getOption('oauth.consumer_key'),
+                'oauth_signature_method' => 'PLAINTEXT',
+                'oauth_timestamp' => time(),
+                'oauth_nonce' => $this->generateNonce(),
+                'oauth_version' => '1.0',
+                'oauth_signature' =>
+                    $this->request->getOption('oauth.consumer_secret') . '&'
+            ];
+
+            foreach ($params as $key => $value) {
+                $params[$key] = $key . '="' . rawurlencode($value) . '"';
+            }
+
+            return ['Authorization', 'OAuth ' . implode(', ', $params)];
+        };
+
+        [$authorization, $oauth] = $buildAuthorizationHeader();
+
+        $headers = [];
+        $headers[$authorization] = $oauth;
+
+        $response = $this->request->oauth('POST', $uri, [], $headers);
 
         parse_str($response, $parsed);
 
         return $parsed;
+    }
+
+    /**
+     * Generates a nonce
+     *
+     * @return string
+     */
+    private function generateNonce(): string
+    {
+        return substr(sha1(str_shuffle(__METHOD__)), 0, 10);
     }
 
     /**
@@ -131,7 +162,6 @@ class Client
         );
     }
 
-
     /**
      *  Gets final access tokens.
      *
@@ -158,21 +188,19 @@ class Client
 
         $uri = sprintf('/AccessToken?oauth_verifier=%s', urlencode($config['token_verifier']));
 
-        // For this particular call, we will be using custom headers
         $buildAuthorizationHeader = function () use ($config) {
-            // Create a nonce based on the config values
-            $nonce = substr(sha1(join('||', $config)), 0, 10);
-
             $params = [
-                'consumer_key' => $this->request->getOption('oauth.consumer_key'),
-                'consumer_secret' => $this->request->getOption('oauth.consumer_secret'),
-                'token' => $config['temp_token'],
-                'token_secret' => $config['temp_token_secret'],
-                'oauth_version' => '1.0',
+                'oauth_consumer_key' => $this->request->getOption('oauth.consumer_key'),
+                'oauth_token' => $config['temp_token'],
                 'oauth_signature_method' => 'PLAINTEXT',
                 'oauth_timestamp' => time(),
-                'oauth_nonce' => $nonce,
-                'oauth_signature' => rawurlencode(sprintf('%s&%s', $config['consumer_secret'], $config['temp_token_secret']))
+                'oauth_nonce' => $this->generateNonce(),
+                'oauth_token_secret' => $config['temp_token_secret'],
+                'oauth_version' => '1.0',
+                'oauth_signature' =>
+                    $this->request->getOption('oauth.consumer_secret')
+                    . '&' .
+                    $config['temp_token_secret']
             ];
 
             foreach ($params as $key => $value) {

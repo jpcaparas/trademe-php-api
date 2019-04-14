@@ -126,8 +126,22 @@ class ClientTest extends TestCase
     public function testGetTemporaryAccessTokens(): void
     {
         $request = $this->prophesize(Request::class);
+
+        $request->getOption('oauth.consumer_key')->willReturn('foo');
+        $request->getOption('oauth.consumer_secret')->willReturn('bar');
+
         $request
-            ->oauth('POST', '/RequestToken?scope=MyTradeMeRead,MyTradeMeWrite')
+            ->oauth(
+                'POST',
+                '/RequestToken?scope=MyTradeMeRead,MyTradeMeWrite',
+                [],
+                new Argument\Token\ArrayEntryToken(
+                    'Authorization',
+                    new Argument\Token\StringContainsToken(
+                        'OAuth oauth_consumer_key="foo", oauth_signature_method="PLAINTEXT"'
+                    )
+                )
+            )
             ->willReturn(
                 'oauth_token=foo&oauth_token_secret=bar'
             );
@@ -196,8 +210,7 @@ class ClientTest extends TestCase
             new Argument\Token\ArrayEntryToken(
                 'Authorization',
                 new Argument\Token\StringContainsToken(
-                    'OAuth consumer_key="foo", consumer_secret="bar", token="baz", token_secret="qux", oauth_version="1.0", oauth_signature_method="PLAINTEXT"'
-                )
+                    'OAuth oauth_consumer_key="foo", oauth_token="baz"')
             )
         )->willReturn('oauth_token=foo&oauth_token_secret=bar');
 
